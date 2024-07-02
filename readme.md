@@ -1,5 +1,7 @@
 # Colloscope Generator
 
+Programme permettant de générer un coloscope pour la MPSI 2 du lycée Charlemagne (1er semestre).
+
 ## Description
 Ce programme génère automatiquement un colloscope avec les fonctionnalités suivantes :
 - Gestion des indisponibilités régulières (ex. : cours de LV2).
