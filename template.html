@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi du Temps des Colles</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        .card {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-800 min-h-screen flex flex-col items-center justify-between p-4">
+    <div class="container mx-auto">
+        <h1 class="text-3xl text-center mb-8 p-8 font-bold">{{ semaine }}</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for trinome, colles in trinomes_grouped.items() %}
+            <div class="bg-gray-100 rounded-lg shadow-md p-6 card">
+                <div class="flex flex-wrap justify-between  items-center">                
+                    <h2 class="text-xl font-semibold mb-4">{{ trinome }}</h2>
+                    <p class="mb-4 ">{{ colles['Eleves'] }}</p>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Colle de Mathématiques</h3>
+                    <ul class="list-disc list-inside space-y-2">
+                        {% for colle in colles['Mathematiques'] %}
+                        <li>
+                            <span class="font-medium">{{ colle['colleur'] }}</span> -
+                            {{ colle['creneau']['jour'] }} {{ colle['creneau']['heure_debut'] }} - {{ colle['creneau']['heure_fin'] }}
+                            <span class="text-sm text-gray-400">({{ colle['matiere'] }})</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Colle d'Anglais ou de Physique</h3>
+                    <ul class="list-disc list-inside space-y-2">
+                        {% for colle in colles['Autre'] %}
+                        <li>
+                            <span class="font-medium">{{ colle['colleur'] }}</span> -
+                            {{ colle['creneau']['jour'] }} {{ colle['creneau']['heure_debut'] }} - {{ colle['creneau']['heure_fin'] }}
+                            <span class="text-sm text-gray-400">({{ colle['matiere'] }})</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Cours</h3>
+                    <ul class="list-disc list-inside space-y-2">
+                        {% for cours in colles['Cours'] %}
+                        <li>
+                            <span class="font-medium">{{ cours['matiere'] }}</span> -
+                            {{ cours['heure'] }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <footer class="w-full mt-8 py-4 text-center text-gray-500 text-sm">
+        Colloscope en MPSI 2 au lycée Charlemagne.
+    </footer>
+</body>
+
+</html>
