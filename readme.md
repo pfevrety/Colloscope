@@ -43,6 +43,6 @@ Le programme est conçu pour fonctionner correctement durant tout le premier sem
 Pour passer d'une semaine à l'autre et effectuer les roulements, incrémentez manuellement de 1 la valeur de numero_semaine dans le fichier ``infosemaine.json``.
 
 
-# Contributing
+# Contribution
 Les contributions sont les bienvenues. Veuillez soumettre un pull request ou ouvrir une issue pour discuter des changements majeurs.
 
