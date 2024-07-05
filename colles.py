@@ -7,7 +7,7 @@ from jinja2 import Environment, FileSystemLoader
 
 MAX_ITERATIONS = 50
 
-conn = sqlite3.connect('colloscope1.db')
+conn = sqlite3.connect('colloscope.db')
 cursor = conn.cursor()
 
 
@@ -30,16 +30,18 @@ def charger_donnees_semaine():
         cours_de_si = data['cours_de_si']
         cours_de_info = data['td_info']
         td_de_francais_en_cours = data['td_de_francais']
+        colle_anglais = data['colle_anglais']
+        colle_physique = data['colle_pc']
+        colle_math = data['colle_maths']
         semaine_paire = semaine % 2 == 0
 
-    return semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire
+    return semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, colle_anglais, colle_math, colle_physique
 
 # Fonction pour vérifier la disponibilité d'un créneau pour un trinôme donné
 def is_creneau_disponible(creneau, indisponibilites):
     for indisponibilite in indisponibilites:
         if (creneau['jour'] == indisponibilite['jour'] and
-            creneau['heure_debut'] == indisponibilite['heure_debut'] and
-            creneau['heure_fin'] == indisponibilite['heure_fin']):
+            creneau['heure_debut'] == indisponibilite['heure_debut']):
             return False
     return True
 
@@ -47,8 +49,7 @@ def is_creneau_disponible(creneau, indisponibilites):
 def marquer_indisponible(trinome_id, creneau, trinomes_dict):
     trinomes_dict[trinome_id]['indisponibilites'].append({
         'jour': creneau['jour'],
-        'heure_debut': creneau['heure_debut'],
-        'heure_fin': creneau['heure_fin']
+        'heure_debut': creneau['heure_debut']
     })
 
 # Fonction pour imprimer l'emploi du temps temporaire (pour debug)
@@ -56,6 +57,23 @@ def imprimer_edt_temporaire(emploi_du_temps):
     print("\nEmploi du temps temporaire:")
     for item in emploi_du_temps:
         print(f"Trinôme: {item['trinome']}, Colleur: {item['colleur']}")
+
+def ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict):
+    emploi_du_temps = []
+    for trinome_id in trinomes_disponibles:
+        print(
+            trinome_id
+        )
+        trinome_data = trinomes_dict[trinome_id]
+        
+        trinome_nom = trinome_data['nom']
+        emploi_du_temps.append({
+            'trinome': trinome_nom,
+            'colleur': 'Pas de colle cette semaine',
+            'matiere': matiere,
+            'creneau': ''
+            })
+    return emploi_du_temps
 
 # Fonction pour assigner les colles d'une matière spécifique
 def assigner_colles(matiere, trinomes_disponibles, creneaux_colleurs, trinomes_dict):
@@ -166,6 +184,32 @@ def attribuer_cours_si(cours_de_si, semaine, trinomes_dict):
             ])
             trinomes_dict[int(id_)].setdefault('cours', []).append({'matiere': 'SI', 'heure': 'Lundi 16:00-18:00'})
 
+def attribuer_td_tp(semaine, trinomes_dict):
+    trinomes_list = list(trinomes_dict.keys())
+    half_size = len(trinomes_list) // 2
+    groupe1 = trinomes_list[:half_size]
+    groupe2 = trinomes_list[half_size:]
+
+    if semaine % 2 == 0:
+        for id_ in groupe1:
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TP Physique', 'heure': 'Lundi 09:00-11:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Mathématiques', 'heure': 'Lundi 11:00-13:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Physique', 'heure': 'Vendredi 09:00-10:00'})
+
+        for id_ in groupe2:
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Mathématiques', 'heure': 'Lundi 09:00-11:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TP Physique', 'heure': 'Lundi 11:00-13:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Physique', 'heure': 'Vendredi 10:00-11:00'})
+    else:
+        for id_ in groupe2:
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TP Physique', 'heure': 'Lundi 09:00-11:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Mathématiques', 'heure': 'Lundi 11:00-13:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Physique', 'heure': 'Vendredi 09:00-10:00'})
+        for id_ in groupe1:
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TD Mathématiques', 'heure': 'Lundi 09:00-11:00'})
+            trinomes_dict[int(id_)].setdefault('Td', []).append({'matiere': 'TP Physique', 'heure': 'Vendredi 10:00-11:00'})
+
+
 def attribuer_cours_info(cours_de_info, semaine, trinomes_dict):
     if cours_de_info:
         trinomes_list_id = list(trinomes_dict.keys())
@@ -194,7 +238,7 @@ def attribuer_cours_info(cours_de_info, semaine, trinomes_dict):
 def generer_edt_et_html(indisponibilites):
 
     colleurs_dict, trinomes_dict = charger_donnees()
-    semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire = charger_donnees_semaine()
+    semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, colle_anglais, colle_math, colle_physique = charger_donnees_semaine()
 
     for id_ in indisponibilites:
         trinomes_dict[int(id_)]['indisponibilites'].extend(indisponibilites[id_])
@@ -203,11 +247,15 @@ def generer_edt_et_html(indisponibilites):
     attribuer_td_francais(td_de_francais_en_cours, semaine, trinomes_dict)
     attribuer_cours_si(cours_de_si, semaine, trinomes_dict)
     attribuer_cours_info(cours_de_info, semaine, trinomes_dict)
-
+    attribuer_td_tp(semaine, trinomes_dict)
     # Attribution des colles par matière
     # On commence par attribuer toutes les colles de mathématiques
-    emploi_du_temps_math, all_assigned_math = assigner_colles('Mathématiques', trinomes_dict.keys(), colleurs_dict, trinomes_dict)
-
+    
+    if colle_math:
+        emploi_du_temps_math, all_assigned_math = assigner_colles('Mathématiques', trinomes_dict.keys(), colleurs_dict, trinomes_dict)
+    else:
+        emploi_du_temps_math, all_assigned_math = ne_pas_assigner_colles('Mathématiques', trinomes_dict.keys(), trinomes_dict), True
+    
     if not all_assigned_math:
         print("Échec lors de l'attribution des colles de Mathématiques.")
         return False
@@ -245,9 +293,9 @@ def generer_edt_et_html(indisponibilites):
     # On verifie que tout le monde a bien eu ses colles
     tous_assignes = all_assigned_groupe1 and all_assigned_groupe2
     emploi_du_temps = emploi_du_temps_math + emploi_du_temps_groupe1 + emploi_du_temps_groupe2
-
+    
     if tous_assignes:
-        trinomes_groupes = {trinome['nom']: {'Mathematiques': [], 'Autre': [], 'Cours': trinome.get('cours', []), 'Eleves': " ".join(json.loads(trinome['noms_eleves']))} for trinome in trinomes_dict.values()}
+        trinomes_groupes = {trinome['nom']: {'Mathematiques': [], 'Autre': [], 'Cours': trinome.get('cours', []), 'Td': trinome.get('Td'),'Eleves': " ".join(json.loads(trinome['noms_eleves']))} for trinome in trinomes_dict.values()}
 
         for colle in emploi_du_temps:
             matiere_key = 'Mathematiques' if colle['matiere'] == 'Mathématiques' else 'Autre'
@@ -263,7 +311,7 @@ def generer_edt_et_html(indisponibilites):
 
         env = Environment(loader=FileSystemLoader('.'))
         template = env.get_template('template.html')
-
+    
         html_output = template.render(trinomes_grouped=trinomes_groupes, semaine=f"Colloscope de la semaine du {lundi_str} au {dimanche_str}")
 
         with open('emploi_du_temps.html', 'w', encoding='utf-8') as f:

@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-conn = sqlite3.connect('colloscope1.db')
+conn = sqlite3.connect('colloscope.db')
 cursor = conn.cursor()
 cursor.execute('DROP TABLE IF EXISTS Colleurs')
 cursor.execute('DROP TABLE IF EXISTS Eleves')
@@ -206,7 +206,7 @@ conn.commit()
 conn.close()
 
 def afficher_eleves():
-    conn = sqlite3.connect('colloscope1.db')
+    conn = sqlite3.connect('colloscope.db')
     cursor = conn.cursor()
     cursor.execute('SELECT id, nom, noms_eleves FROM Trinomes')
     groupes = cursor.fetchall()

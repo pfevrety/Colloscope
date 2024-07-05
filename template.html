@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emploi du Temps des Colles</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles */
         .card {
@@ -17,8 +17,8 @@
         }
     </style>
 </head>
-
-<body class="bg-white text-gray-800 min-h-screen flex flex-col items-center justify-between p-4">
+<!--Moquet aime les chineurs-->
+<body class="bg-gray-200 text-gray-800 min-h-screen flex flex-col items-center justify-between p-4">
     <div class="container mx-auto">
         <h1 class="text-3xl text-center mb-8 p-8 font-bold">{{ semaine }}</h1>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -63,12 +63,24 @@
                         {% endfor %}
                     </ul>
                 </div>
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Groupes de TD-TP</h3>
+                    <ul class="list-disc list-inside space-y-2">
+                        {% for td in colles['Td'] %}
+                        <li>
+                            <span class="font-medium">{{ td['matiere'] }}</span> -
+                            {{ td['heure'] }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
             </div>
             {% endfor %}
         </div>
     </div>
     <footer class="w-full mt-8 py-4 text-center text-gray-500 text-sm">
-        Colloscope en MPSI 2 au lycée Charlemagne.
+        Colloscope de la MPSI2 du lycée Charlemagne.
     </footer>
 </body>
 

@@ -1,6 +1,9 @@
 {
-    "numero_semaine": 1,
+    "numero_semaine": 0,
     "cours_de_si": true,
     "td_de_francais": true,
-    "td_info": true
-  }
+    "td_info": true,
+    "colle_anglais": true,
+    "colle_maths": true,
+    "colle_pc": true
+}

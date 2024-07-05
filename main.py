@@ -1,3 +1,5 @@
+import json
+
 from colles import generer_edt_et_html
 from db import afficher_eleves
 
@@ -43,12 +45,10 @@ def saisie_indisponibilites():
         
         for h in range(heures_debut, heures_fin):
             heure_debut_creneau = f"{h:02}:00"
-            heure_fin_creneau = f"{h+1:02}:00"
             
             indisponibilite = {
                 "jour": jour,
                 "heure_debut": heure_debut_creneau,
-                "heure_fin": heure_fin_creneau
             }
             
             indisponibilites.append(indisponibilite)
@@ -76,10 +76,21 @@ if __name__ == "__main__":
     max_iterations = 100
 
     while not generation_reussie and iteration < MAX_INTERATIONS:
+        print("-"*40)
         generation_reussie = generer_edt_et_html(indisponibilites)
         iteration += 1
     if not generation_reussie:
         print("Il y a eu un problème. La semaine est surement incasable.")
     else:
-        print(f"Colloscope généré avec succès après {iteration} itérations principales.")
+        print("-"*40)
+        print(f"Colloscope généré avec succès après {iteration} itérations principales. Lien du Colloscope : ./emploi_du_temps.html")
 
+        change_date = input("Voulez vous incrémenter la semaine ? (y/n) ") == "y"
+        if change_date:
+            with open('infosemaine.json', 'r+') as f:
+                data = json.load(f)
+                data['numero_semaine'] = data['numero_semaine'] + 1
+                f.seek(0)
+                json.dump(data, f, indent=4)
+                f.truncate()
+                
