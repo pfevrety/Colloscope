@@ -31,9 +31,9 @@ def charger_donnees_semaine():
         cours_de_info = data['td_info']
         td_de_francais_en_cours = data['td_de_francais']
         interruption = {
-            "Mathématiques": data['colle_maths'],
-            "Physique": data['colle_pc'],
-            "Anglais": data['colle_anglais']
+            "Mathématiques": data['colle_maths_interruption'],
+            "Physique": data['colle_pc_interruption'],
+            "Anglais": data['colle_anglais_interruption']
         }
         semaine_paire = semaine % 2 == 0
 
@@ -76,7 +76,7 @@ def ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict):
 # Fonction pour assigner les colles d'une matière spécifique
 def assigner_colles(matiere, trinomes_disponibles, creneaux_colleurs, trinomes_dict, interruptions):
     print("La")
-    if not interruptions[matiere]:
+    if interruptions[matiere]:
         return ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict), True
     emploi_du_temps = []
     tous_assignes = True

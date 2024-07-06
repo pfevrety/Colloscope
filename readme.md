@@ -2,6 +2,9 @@
 
 Programme permettant de générer un coloscope pour la MPSI 2 du lycée Charlemagne (1er semestre).
 
+![Interface finale du colloscope](interface.png)
+
+
 ## Description
 Ce programme génère automatiquement un colloscope avec les fonctionnalités suivantes :
 - Gestion des indisponibilités régulières (ex. : cours de LV2).
@@ -40,8 +43,8 @@ Le programme effectuera plusieurs itérations pour générer un colloscope respe
 Le programme est conçu pour fonctionner correctement durant tout le premier semestre. Le support pour le second semestre sera ajouté ultérieurement.
 
 ## Remarque
-Pour passer d'une semaine à l'autre et effectuer les roulements, incrémentez manuellement de 1 la valeur de numero_semaine dans le fichier ``infosemaine.json``.
-
+* Pour passer d'une semaine à l'autre et effectuer les roulements, incrémentez manuellement de 1 la valeur de numero_semaine dans le fichier ``infosemaine.json``.
+* La base de donnée s'initialise d'elle-même en lançant le programme.
 
 # Contribution
 Les contributions sont les bienvenues. Veuillez soumettre un pull request ou ouvrir une issue pour discuter des changements majeurs.
