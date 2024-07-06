@@ -30,12 +30,14 @@ def charger_donnees_semaine():
         cours_de_si = data['cours_de_si']
         cours_de_info = data['td_info']
         td_de_francais_en_cours = data['td_de_francais']
-        colle_anglais = data['colle_anglais']
-        colle_physique = data['colle_pc']
-        colle_math = data['colle_maths']
+        interruption = {
+            "Mathématiques": data['colle_maths'],
+            "Physique": data['colle_pc'],
+            "Anglais": data['colle_anglais']
+        }
         semaine_paire = semaine % 2 == 0
 
-    return semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, colle_anglais, colle_math, colle_physique
+    return semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, interruption
 
 # Fonction pour vérifier la disponibilité d'un créneau pour un trinôme donné
 def is_creneau_disponible(creneau, indisponibilites):
@@ -61,11 +63,7 @@ def imprimer_edt_temporaire(emploi_du_temps):
 def ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict):
     emploi_du_temps = []
     for trinome_id in trinomes_disponibles:
-        print(
-            trinome_id
-        )
-        trinome_data = trinomes_dict[trinome_id]
-        
+        trinome_data = trinomes_dict[trinome_id]        
         trinome_nom = trinome_data['nom']
         emploi_du_temps.append({
             'trinome': trinome_nom,
@@ -76,8 +74,10 @@ def ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict):
     return emploi_du_temps
 
 # Fonction pour assigner les colles d'une matière spécifique
-def assigner_colles(matiere, trinomes_disponibles, creneaux_colleurs, trinomes_dict):
-
+def assigner_colles(matiere, trinomes_disponibles, creneaux_colleurs, trinomes_dict, interruptions):
+    print("La")
+    if not interruptions[matiere]:
+        return ne_pas_assigner_colles(matiere, trinomes_disponibles, trinomes_dict), True
     emploi_du_temps = []
     tous_assignes = True
 
@@ -238,7 +238,7 @@ def attribuer_cours_info(cours_de_info, semaine, trinomes_dict):
 def generer_edt_et_html(indisponibilites):
 
     colleurs_dict, trinomes_dict = charger_donnees()
-    semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, colle_anglais, colle_math, colle_physique = charger_donnees_semaine()
+    semaine, cours_de_si, cours_de_info, td_de_francais_en_cours, semaine_paire, interruptions = charger_donnees_semaine()
 
     for id_ in indisponibilites:
         trinomes_dict[int(id_)]['indisponibilites'].extend(indisponibilites[id_])
@@ -251,10 +251,8 @@ def generer_edt_et_html(indisponibilites):
     # Attribution des colles par matière
     # On commence par attribuer toutes les colles de mathématiques
     
-    if colle_math:
-        emploi_du_temps_math, all_assigned_math = assigner_colles('Mathématiques', trinomes_dict.keys(), colleurs_dict, trinomes_dict)
-    else:
-        emploi_du_temps_math, all_assigned_math = ne_pas_assigner_colles('Mathématiques', trinomes_dict.keys(), trinomes_dict), True
+    emploi_du_temps_math, all_assigned_math = assigner_colles('Mathématiques', trinomes_dict.keys(), colleurs_dict, trinomes_dict, interruptions)
+
     
     if not all_assigned_math:
         print("Échec lors de l'attribution des colles de Mathématiques.")
@@ -271,22 +269,22 @@ def generer_edt_et_html(indisponibilites):
     groupe1 = trinomes_list[:half_size]
     groupe2 = trinomes_list[half_size:]
 
-    emploi_du_temps_groupe1, all_assigned_groupe1 = assigner_colles(matiere_groupe1, groupe1, colleurs_dict, trinomes_dict)
-    emploi_du_temps_groupe2, all_assigned_groupe2 = assigner_colles(matiere_groupe2, groupe2, colleurs_dict, trinomes_dict)
+    emploi_du_temps_groupe1, all_assigned_groupe1 = assigner_colles(matiere_groupe1, groupe1, colleurs_dict, trinomes_dict, interruptions)
+    emploi_du_temps_groupe2, all_assigned_groupe2 = assigner_colles(matiere_groupe2, groupe2, colleurs_dict, trinomes_dict, interruptions)
 
     iteration1, iteration2 = 0, 0
 
     # On attribue alors les colles de physique
     while not all_assigned_groupe1 and iteration1 < MAX_ITERATIONS:
         iteration1 += 1
-        emploi_du_temps_groupe1, all_assigned_groupe1 = assigner_colles(matiere_groupe1, groupe1, colleurs_dict, trinomes_dict)
+        emploi_du_temps_groupe1, all_assigned_groupe1 = assigner_colles(matiere_groupe1, groupe1, colleurs_dict, trinomes_dict, interruptions)
 
     print(f"Colles de {matiere_groupe1} attribuées avec succès.")
 
     # On attribue alors les colles d'anglais
     while not all_assigned_groupe2 and iteration2 < MAX_ITERATIONS:
         iteration2 += 1
-        emploi_du_temps_groupe2, all_assigned_groupe2 = assigner_colles(matiere_groupe2, groupe2, colleurs_dict, trinomes_dict)
+        emploi_du_temps_groupe2, all_assigned_groupe2 = assigner_colles(matiere_groupe2, groupe2, colleurs_dict, trinomes_dict, interruptions)
 
     print(f"Colles de {matiere_groupe2} attribuées avec succès.")
 
