@@ -42,7 +42,7 @@ Le programme effectuera plusieurs itérations pour générer un colloscope respe
 
 Le programme est conçu pour fonctionner correctement durant tout le premier semestre. Le support pour le second semestre sera ajouté ultérieurement.
 
-## Remarque
+## Remarques
 * Pour passer d'une semaine à l'autre et effectuer les roulements, incrémentez manuellement de 1 la valeur de numero_semaine dans le fichier ``infosemaine.json``.
 * La base de donnée s'initialise d'elle-même en lançant le programme.
 
